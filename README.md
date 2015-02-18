@@ -33,7 +33,7 @@ To use
     ...     print ff.unparse(r) == records[n]
         
     >>> rec_in[0]                                               
-    Out[6]: Record(tr=1, seq=1234567890.1200001, estado='SP', resto='AAAAAAAAAAAAAX')     
+    Out[6]: Record(tr=1, seq=1234567890.12, estado='SP', resto='AAAAAAAAAAAAAX')     
 
     >>> rec_in[0] = rec_in[0]._replace(resto='Z12345678901234Z')
     >>> ff.unparse(rec_in[0])
