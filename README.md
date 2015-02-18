@@ -17,6 +17,7 @@ To set it up you need to create a JSON file with the following attributes:
 - type     - str or int
 - length   - field length
 - decimals - if decimals else zero
+- sign     - 'True' if signaled field else 'False'
 
 To use
 ======
