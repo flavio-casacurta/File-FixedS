@@ -23,7 +23,7 @@ To use
 ======
 
     >>> from fixed_files import Fixed_files
-    >>> ff = Fixed_files('record.json', dic=False, checklength=False)
+    >>> ff = Fixed_files('record.json')
     >>> records = open('record.txt').readlines()
     >>> rec_in = []
     >>> for record in records:
