@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 
-
 from __future__ import absolute_import, unicode_literals
 import json
 from collections import namedtuple
 from Exceptions import FieldLengthOverflow
+
 
 __author__ = 'flavio@casacurta.com'
 
@@ -54,6 +54,8 @@ class Fixed_files(object):
         fmt_out_str = ''
         fmt_out_fmt = ''
         for att in self.lattrs:
+            if eval(att['sign']):
+                att['length'] = str(int(att['length']) - 1)
             if att['type'] == 'str':
                 fmt_out_str += "{}".format('{:<' + att['length'] + '}')
                 if self.dic:
@@ -65,13 +67,42 @@ class Fixed_files(object):
                     dec = ' * {}'.format(int('{:<0{}}'.format('1', int(att['decimals'])+1)))
                 else:
                     dec = ''
-                fmt_out_str += '{}'.format('{:>0' + att['length'] + '}')
-                if self.dic:
-                    fmt_out_fmt += 'str(int(record["{}"]{}))[:{}]'.format(att['field'], dec, att['length'])
+                if eval(att['sign']):
+                    fmt_out_str += '{}'.format('{:>0' + att['length'] + '}{}')
                 else:
-                    fmt_out_fmt += 'str(int(record.{}{}))[:{}]'.format(att['field'], dec, att['length'])
+                    fmt_out_str += '{}'.format('{:>0' + att['length'] + '}')
+                if self.dic:
+                    if eval(att['sign']):
+                        fmt_out_fmt += '''str(int(round(record["{0}"]{1},0) * -1))[:{2}]
+                                          if record["{0}"] < 0
+                                          else str(int(round(record["{0}"]{1},0)))[:{2}],
+                                          '-' if record["{0}"] < 0 else '+'
+                                       '''.format(att['field'],
+                                                  dec,
+                                                  att['length'])
+                    else:
+                        fmt_out_fmt += 'str(int(record["{}"]{}))[:{}]'.format(att['field'],
+                                                                              dec,
+                                                                              att['length'])
+                else:
+                    if eval(att['sign']):
+                        fmt_out_fmt += '''str(int(round(record.{0}{1},0) * -1))[:{2}]
+                                          if record.{0} < 0
+                                          else str(int(round(record.{0}{1},0)))[:{2}],
+                                          '-' if record.{0} < 0 else '+'
+                                       '''.format(att['field'],
+                                                  dec,
+                                                  att['length'])
+                    else:
+                        fmt_out_fmt += 'str(int(record.{}{}))[:{}]'.format(att['field'],
+                                                                           dec,
+                                                                           att['length'])
                 fmt_out_fmt += ', '
         self.fmt_out = "'" + fmt_out_str + "\\n'.format(" + fmt_out_fmt + ")"
+        print self.fmt_out
+
+#ev = "'{:>012}{}'.format(str(int(seq * 100 * -1))[:12] if seq < 0 else str(int(seq * 100))[:12], '-' if seq < 0 else '')"
+
         self.Record = namedtuple('Record', self.attr)
 
 
@@ -80,41 +111,12 @@ class Fixed_files(object):
         nt = eval("self.Record({})".format(self.slices))
 
         if self.dic:
-#           return dict(nt._asdict())
             return {k:nt[n] for n, k in enumerate(self.attr)}
-            '''
-            >>> %timeit -n100000 dict(nt._asdict())
-            100000 loops, best of 3: 14.1 microseconds per loop
-            >>> %timeit -n100000 {k:nt[n] for n, k in enumerate(ff.attr)}
-            100000 loops, best of 3: 909 nanoseconds per loop
-            1 microsecond = 1.000 nanoseconds
-            14.1*1000/909
-            15.51 fast
-            '''
-        else:
-            return nt
+
+        return nt
 
 
     def unparse(self, record):
-
-        if self.checklength:
-            for att in self.lattrs:
-                if att['type'] == 'str':
-                    if self.dic:
-                        check = 'len(record["{}"]) > {}'.format(att['field'], att['length'])
-                    else:
-                        check = 'len(record.{}) > {}'.format(att['field'], att['length'])
-                elif att['type'] == 'int':
-                    if int(att['decimals']):
-                        dec = ' * {}'.format(int('{:<0{}}'.format('1', int(att['decimals'])+1)))
-                    else:
-                        dec = ''
-                    if self.dic:
-                        check = 'len(str(int(record["{}"]{}))) > {}'.format(att['field'], dec, att['length'])
-                    else:
-                        check = 'len(str(int(record.{}{}))) > {}'.format(att['field'], dec, att['length'])
-                if eval(check):
-                    raise FieldLengthOverflow
 
         return eval("{}".format(self.fmt_out))
 
