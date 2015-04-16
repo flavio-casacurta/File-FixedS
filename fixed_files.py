@@ -73,35 +73,33 @@ class Fixed_files(object):
                     fmt_out_str += '{}'.format('{:>0' + att['length'] + '}')
                 if self.dic:
                     if eval(att['sign']):
-                        fmt_out_fmt += '''str(int(round(record["{0}"]{1},0) * -1))[:{2}]
+                        fmt_out_fmt += '''str(int(round(record["{0}"]{1}, 0) * -1))[:{2}]
                                           if record["{0}"] < 0
-                                          else str(int(round(record["{0}"]{1},0)))[:{2}],
+                                          else str(int(round(record["{0}"]{1}, 0)))[:{2}],
                                           '-' if record["{0}"] < 0 else '+'
                                        '''.format(att['field'],
                                                   dec,
                                                   att['length'])
                     else:
-                        fmt_out_fmt += 'str(int(record["{}"]{}))[:{}]'.format(att['field'],
+                        fmt_out_fmt += 'str(int(round(record["{}"]{}, 0)))[:{}]'.format(att['field'],
                                                                               dec,
                                                                               att['length'])
                 else:
                     if eval(att['sign']):
-                        fmt_out_fmt += '''str(int(round(record.{0}{1},0) * -1))[:{2}]
+                        fmt_out_fmt += '''str(int(round(record.{0}{1}, 0) * -1))[:{2}]
                                           if record.{0} < 0
-                                          else str(int(round(record.{0}{1},0)))[:{2}],
+                                          else str(int(round(record.{0}{1}, 0)))[:{2}],
                                           '-' if record.{0} < 0 else '+'
                                        '''.format(att['field'],
                                                   dec,
                                                   att['length'])
                     else:
-                        fmt_out_fmt += 'str(int(record.{}{}))[:{}]'.format(att['field'],
+                        fmt_out_fmt += 'str(int(round(record.{}{}, 0)))[:{}]'.format(att['field'],
                                                                            dec,
                                                                            att['length'])
                 fmt_out_fmt += ', '
-        self.fmt_out = "'" + fmt_out_str + "\\n'.format(" + fmt_out_fmt + ")"
-        print self.fmt_out
 
-#ev = "'{:>012}{}'.format(str(int(seq * 100 * -1))[:12] if seq < 0 else str(int(seq * 100))[:12], '-' if seq < 0 else '')"
+        self.fmt_out = "'" + fmt_out_str + "\\n'.format(" + fmt_out_fmt + ")"
 
         self.Record = namedtuple('Record', self.attr)
 
