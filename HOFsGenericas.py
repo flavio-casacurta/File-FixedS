@@ -1,6 +1,6 @@
 import re
 
-#------------------- combinatorial.py -------------------#
+#------------------- combinatorial ----------------------#
 from operator import mul, add, truth
 apply_each = lambda fns, args=[]: map(apply, fns, [args]*len(fns))
 bools = lambda lst: map(truth, lst)
@@ -18,7 +18,7 @@ compose = lambda f,g: lambda x, f=f, g=g: f(g(x))
 compose3 = lambda f,g,h: lambda x, f=f, g=g, h=h: f(g(h(x)))
 ident = lambda x: x
 
-#------------------- combinatorial.py -------------------#
+#------------------- system -----------------------------#
 wordsRe = re.compile(r'\S+', re.UNICODE)
 words = lambda line: [len(wordsRe.findall(line)), wordsRe.findall(line)]
 word = lambda line, arg: wordsRe.findall(line)[arg-1 if arg > 0 else 0] if arg <= words(line) else ''
