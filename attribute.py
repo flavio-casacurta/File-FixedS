@@ -36,30 +36,30 @@ class Attribute(object):
 # Determina se a picture tem parenteses
         pap = pic.find('(')
 
-# determina length dos inteiros e decimals SEM parenteses
+# determina length dos integers e decimals SEM parenteses
         if  pap == -1:
             if  'V' in pic:
-                inteiros = pic.index('V')
+                integers = pic.index('V')
                 decimals = len(pic)-(pic.index('V')+1)
             else:
-                inteiros = len(pic)
-# determina length dos inteiros e decimals COM parenteses
+                integers = len(pic)
+# determina length dos integers e decimals COM parenteses
         else:
             if  'V' in pic:
                 intTmp = pic[:pic.index('V')]
                 decTmp = pic[pic.index('V')+1:]
                 if  '('  in intTmp:
-                    inteiros = int(intTmp[intTmp.index('(')+1:intTmp.index(')')])
+                    integers = int(intTmp[intTmp.index('(')+1:intTmp.index(')')])
                 else:
-                    inteiros = len(intTmp)
+                    integers = len(intTmp)
                 if  '('  in decTmp:
                     decimals = int(decTmp[decTmp.index('(')+1:decTmp.index(')')])
                 else:
                     decimals = len(decTmp)
             else:
-                inteiros = int(pic[pap+1:pic.index(')')])
+                integers = int(pic[pap+1:pic.index(')')])
 
-        length = inteiros + decimals
+        length = integers + decimals
 
         if  occurs:
             for o in occurs.split():
@@ -111,7 +111,7 @@ class Attribute(object):
 
 ### Atributos JSON
 
-    def attribute_json(self, pic, usage=None, occurs=None):
+    def attribute_json(self, pic, usage=None, occurs=None, signal=True):
 
         usage = 'DISPLAY' if not usage else usage
         decimals = 0
@@ -119,37 +119,37 @@ class Attribute(object):
 # Determina a natureza Alpha ou Numerica
         sign = False
         if  pic[0] == 'S':
-            sign = True
+            sign = signal
             pic = pic[1:]
         pic0 = pic[0] if not occurs else 'X'
 
 # Determina se a picture tem parenteses
         pap = pic.find('(')
 
-# determina length dos inteiros e decimals SEM parenteses
+# determina length dos integers e decimals SEM parenteses
         if  pap == -1:
             if  'V' in pic:
-                inteiros = pic.index('V')
+                integers = pic.index('V')
                 decimals = len(pic)-(pic.index('V')+1)
             else:
-                inteiros = len(pic)
-# determina length dos inteiros e decimals COM parenteses
+                integers = len(pic)
+# determina length dos integers e decimals COM parenteses
         else:
             if  'V' in pic:
                 intTmp = pic[:pic.index('V')]
                 decTmp = pic[pic.index('V')+1:]
                 if  '('  in intTmp:
-                    inteiros = int(intTmp[intTmp.index('(')+1:intTmp.index(')')])
+                    integers = int(intTmp[intTmp.index('(')+1:intTmp.index(')')])
                 else:
-                    inteiros = len(intTmp)
+                    integers = len(intTmp)
                 if  '('  in decTmp:
                     decimals = int(decTmp[decTmp.index('(')+1:decTmp.index(')')])
                 else:
                     decimals = len(decTmp)
             else:
-                inteiros = int(pic[pap+1:pic.index(')')])
+                integers = int(pic[pap+1:pic.index(')')])
 
-        length = inteiros + decimals
+        length = integers + decimals
 
         if occurs:
             for o in occurs.split():

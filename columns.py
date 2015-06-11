@@ -1,4 +1,7 @@
-from HOFs import *
+import os
+import re
+from util.HOFs import *
+from util.homogenize import homogenize
 from attribute import Attribute
 
 class Columns(object):
@@ -6,18 +9,11 @@ class Columns(object):
     def __init__(self):
         self.attr = Attribute(lenVar=4)
 
-    def columns(self, file, fmt='json'):
+    def columns(self, file, fmt='json', signal=True):
         self.fmt = fmt
-        lines = open(file).readlines()
-        clearLines = map(l672, filter(all3(isNotRem, isNotBlank, isNotEjectOrSkip), lines))
-        joinLines = []
-        holder = []
-        for l in clearLines:
-            holder.append(l if not holder else l.strip())
-            if l.endswith('.'):
-                joinLines.append(" ".join(holder))
-                holder = []
-        lines = joinLines
+        basename = os.path.basename(file).split('.')[0]
+        file = open(file).readlines()
+        lines = homogenize(file)
 
         addColumns = []
         filler = 0
@@ -52,27 +48,32 @@ class Columns(object):
                     addColumns.append(line + '.\n')
                 continue
 
-            dataName = wrds[1].lower().replace('-','_')
-            if dataName == 'filler':
-                continue
+            dataname = wrds[1].lower().replace('-','_')
+            if dataname == 'filler':
+               filler+=1
+               dataname = '{}_{}_{:02}'.format(basename.lower(), dataname, filler)
+
             picture = line.split('PIC')[1].split()
             pic = picture[0]
             usage = picture[1] if len(picture) > 1 and picture[1] != 'VALUE' else None
             occurs = picture[2:] if len(picture) > 2 and picture[2] == 'OCCURS' else None
             if self.fmt == 'json':
-                type, length, decimals, sign = self.attr.attribute_json(pic, usage, occurs)
+                type, length, decimals, sign = self.attr.attribute_json(pic, usage, occurs, signal)
 
                 jCol = ('{}"field": "{}", "type": "{}", "length": "{}", "decimals": "{}", "sign": '
-                        '"{}"{}\n').format('{', dataName, type, length, decimals, sign, '}')
+                        '"{}"{}\n').format('{', dataname, type, length, decimals, sign, '}')
                 addColumns.append(jCol)
             else:
                 lCol = line.replace('COMP-3', '').replace('COMP', '').rstrip()
                 sign = '.\n'
                 if pic[0] == 'S':
-                    sign = ' SIGN TRAILING SEPARATE.\n'
-                    if len(lCol) > 48:
+                    if signal:
+                        sign = ' SIGN TRAILING SEPARATE.\n'
+                    else:
+                        lCol = re.sub('PIC\s+S', 'PIC  ',lCol)
+                    if len(lCol) > 73 - len(sign):
                         addColumns.append(lCol + '\n')
-                        addColumns.append('{:>72}'.format('SIGN TRAILING SEPARATE.\n'))
+                        addColumns.append('{:>72}'.format(sign))
                     else:
                         addColumns.append(lCol + sign)
                 else:

@@ -11,18 +11,21 @@ __author__ = 'flavio@casacurta.com'
 class Fixed_files(object):
 
 
-    def __init__(self, filejson, dic=False, checklength=False):
+    def __init__(self, filejson, obj=False, dic=False, checklength=False):
 
         self.dic = dic
         self.checklength = checklength
 
-        try:
-            if filejson.endswith('.json'):
-                attrs = open(filejson).readlines()
-            else:
-                attrs = open('{}.json'.format(filejson)).readlines()
-        except:
-            attrs = []
+        if obj:
+            attrs = filejson
+        else:
+            try:
+                if filejson.endswith('.json'):
+                    attrs = open(filejson).readlines()
+                else:
+                    attrs = open('{}.json'.format(filejson)).readlines()
+            except:
+                attrs = []
 
         self.lattrs = [json.loads(line.decode('utf-8')) for line in attrs]
 
