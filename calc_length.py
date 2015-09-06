@@ -2,11 +2,11 @@
 
 """
    Created on 27/04/2015
-   @author: C&C - HardSoft & Aioway
+   @author: C&C - HardSoft
 """
 
 from util.HOFs import *
-
+from util.homogenize import homogenize
 
 def calc_length(copy):
     if isinstance(copy, list):
@@ -17,21 +17,13 @@ def calc_length(copy):
         else:
             book = []
 
-    clearlines = map(l672, filter(all3(isNotRem, isNotBlank, isNotEjectOrSkip), book))
+    lines = homogenize(book)
 
-    havecopy = filter(isCopy, clearlines)
+    havecopy = filter(isCopy, lines)
     if havecopy:
         bkm = ''.join(havecopy[0].split('COPY')[1].replace('.', '').split())
         msg = 'COPY {} deve ser expandido.'.format(bkm)
         return {'retorno': False, 'msg': msg, 'lrecl': 0}
-
-    lines = []
-    holder = []
-    for l in clearlines:
-        holder.append(l if not holder else l.strip())
-        if l.endswith('.'):
-            lines.append(" ".join(holder))
-            holder = []
 
     lrecl = 0
     redefines = False
