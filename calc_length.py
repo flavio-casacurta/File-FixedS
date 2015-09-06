@@ -2,7 +2,7 @@
 
 """
    Created on 27/04/2015
-   @author: C&C - HardSoft
+   @author: C&C - HardSoft & Aioway
 """
 
 from util.HOFs import *
