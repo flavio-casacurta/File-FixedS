@@ -6,11 +6,11 @@ import json
 from columns import Columns
 from fixed_files import Fixed_files
 
-def geracsv(book, records, arq):
+def geracsv(book, records, arq, signal):
     try:
         basename = os.path.basename(book).split('.')[0]
         col = Columns()
-        js = col.columns(book)
+        js = col.columns(book, signal=signal)
         ff = Fixed_files(js, obj=True)
         rec_in = []
         for record in records:
@@ -20,8 +20,8 @@ def geracsv(book, records, arq):
         csvs = ';'.join(str(flds)[1:-1].upper().replace(basename + '_','').replace("'","").split(',')) + '\n'
         csvs = re.sub('FILLER_..', 'FILLER', csvs)
         for r in rec_in:
-            for f in flds:
-                csvs += str(eval('r.{}'.format(f)))+';'
+            for n, f in enumerate(r):
+                csvs += r[n] +';'
             csvs += '\n'
         outcsv = arq.split('.')[0] + '.csv'
         out = open(outcsv, 'w')

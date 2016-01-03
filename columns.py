@@ -64,7 +64,7 @@ class Columns(object):
                         '"{}"{}\n').format('{', dataname, type, length, decimals, sign, '}')
                 addColumns.append(jCol)
             else:
-                lCol = line.replace('COMP-3', '').replace('COMP', '').rstrip()
+                lCol = line.replace('COMP-3', '').replace(' COMP ', '').replace(' USAGE ', '').rstrip()
                 sign = '.\n'
                 if pic[0] == 'S':
                     if signal:

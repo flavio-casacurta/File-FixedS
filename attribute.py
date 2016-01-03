@@ -119,8 +119,9 @@ class Attribute(object):
 # Determina a natureza Alpha ou Numerica
         sign = False
         if  pic[0] == 'S':
-            sign = signal
             pic = pic[1:]
+            if signal == True:
+                sign = True
         pic0 = pic[0] if not occurs else 'X'
 
 # Determina se a picture tem parenteses

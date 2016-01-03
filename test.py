@@ -1,7 +1,7 @@
 from fixed_files import Fixed_files
-fj = r'C:\BNB\S303\GERADOS\Json\B303W80.json'
-ff = Fixed_files(fj, dic=True, checklength=False)
-rt = r'C:\BNB\S303\GERADOS\Json\B303W80.txt'
+fj = r'E:\GFCT\Evidencias\cpy\gfctb092.json'
+ff = Fixed_files(fj)
+rt = r'E:\GFCT\Evidencias\ZONAD2.TXT'
 records = open(rt).readlines()
 rec_in = []
 for record in records:

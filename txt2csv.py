@@ -31,7 +31,17 @@ while True:
         print '\nArquivo "' + arq + '" - invalido!\n'
         arq = raw_input('Tente Novamente: ')
 
-gercsv = geracsv(book, records, arq)
+signal = raw_input(u'Com sinal? (S - Sim ou N - Nao): ')
+while True:
+    if  signal and signal[0].upper() in ('S', 'N'):
+        break
+    else:
+        print '\nOpss... informe S - Sim ou N - Nao!\n'
+        signal = raw_input('Tente Novamente: ')
+
+signal = True if signal[0].upper() == 'S' else False
+
+gercsv = geracsv(book, records, arq, signal)
 if gercsv[0]:
     disp = '*** Arquivo: ' + arq + '" Processado com Sucesso ***'
     print '\n\n{}'.format('*' * len(disp))
