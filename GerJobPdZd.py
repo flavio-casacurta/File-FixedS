@@ -2,6 +2,7 @@
 '''
    Created on 22/05/2015
    @author: C&C - HardSoft
+   Gera job convertendo compactado para zonado
 '''
 import os
 import sys
