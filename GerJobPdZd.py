@@ -2,7 +2,6 @@
 '''
    Created on 22/05/2015
    @author: C&C - HardSoft
-   Gera job convertendo compactado para zonado
 '''
 import os
 import sys
@@ -19,18 +18,20 @@ class GerJobPdZd(object):
         self.book = book
         self.sortin = sortin
         self.sortout = sortout
-        self.signal=False
 
     def gerjob(self):
         try:
-            bookin = file(self.book).readlines()
-
+            basename = os.path.basename(self.book).split('.')[0].upper()
             col = Columns()
-            bookout = col.columns(self.book,fmt='cbl', signal=self.signal)
+            bookout = col.columns(self.book,fmt='cbl', signal=False)
+            book_zonado = os.path.join(self.path, '{}_ZD.cpy'.format(basename))
+            with open(book_zonado, 'w') as bkzd:
+                bkzd.writelines(bookout)
             lengthout = str(calc_length(bookout)['lrecl'])
 
             formatout = ''
             start = 1
+            bookin = file(self.book).readlines()
             for line in bookin:
                 if 'PIC' not in line:
                     continue
@@ -44,7 +45,7 @@ class GerJobPdZd(object):
             formatout = formatout[:-2] + ')\n'
 
             dicjob={'@JOBNAME'  :'{:8}'.format(self.jobname)
-                   ,'@BOOK'     :os.path.basename(self.book).split('.')[0].upper()
+                   ,'@BOOK'     :basename
                    ,'@SORTIN'   :self.sortin
                    ,'@SORTOUT'  :self.sortout
                    ,'@LRECL'    :lengthout
@@ -53,9 +54,8 @@ class GerJobPdZd(object):
 
             job = change(dicjob, file('jobpk2zd.template').read())
             jobName = os.path.join(self.path, '{}.jcl'.format(self.jobname))
-            jobWrite = open(jobName, 'w')
-            jobWrite.write(job)
-            jobWrite.close()
+            with open(jobName, 'w') as jobWrite:
+                jobWrite.write(job)
             return True, None
         except:
             return (False, traceback.format_exc(sys.exc_info))

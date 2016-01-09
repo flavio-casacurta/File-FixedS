@@ -15,7 +15,7 @@ csv = raw_input(u'\nInforme o Caminho e nome do arquivo .csv: ')
 while True:
     if csv.split('.')[1].lower() == 'csv':
         try:
-            lines = open(csv).readlines()[1:]
+            lines = open(csv).read().splitlines()[1:]
             break
         except IOError:
             print '\nArquivo "' + csv + '" - inexistente!\n'

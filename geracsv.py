@@ -19,10 +19,17 @@ def geracsv(book, records, arq, signal):
         flds = [str(att['field']) for att in fj]
         csvs = ';'.join(str(flds)[1:-1].upper().replace(basename + '_','').replace("'","").split(',')) + '\n'
         csvs = re.sub('FILLER_..', 'FILLER', csvs)
+
+        fmt = '''"{}"'''.format(str(['{' + f + '}' for f in flds])[1:-1]).replace("'","").replace(',',';')
+        fmt += ".format(**r)"
+
         for r in rec_in:
+#            csvs += eval(fmt) + '\n'
+
             for n, f in enumerate(r):
                 csvs += r[n] +';'
             csvs += '\n'
+
         outcsv = arq.split('.')[0] + '.csv'
         out = open(outcsv, 'w')
         out.write(csvs)

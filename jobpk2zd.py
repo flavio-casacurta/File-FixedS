@@ -6,7 +6,7 @@ print '              e grava arquivo zonado\n'
 
 jobname = raw_input(u'Informe o nome do JOB: ').upper()
 while True:
-    if jobname:
+    if len(jobname) > 4 and len(jobname) < 9:
         break
     else:
         print 'Nome do JOB invalido!\n'

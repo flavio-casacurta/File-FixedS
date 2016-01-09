@@ -4,13 +4,13 @@ from GerPgmZdPd import GerPgmZdPd
 print '\nGera programa para ler   arquivo zonado'
 print '                   e grava arquivo compactado\n'
 
-programId = raw_input(u'Informe o nome do programa: ')
+programId = raw_input(u'Informe o nome do programa: ').upper()
 while True:
     if programId:
         break
     else:
         print 'Nome do programa invalido!\n'
-        programId = raw_input('Tente Novamente: ')
+        programId = raw_input('Tente Novamente: ').upper()
 
 path = raw_input(u'\nInforme o Caminho para gravar o programa gerado: ')
 while True:
