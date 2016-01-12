@@ -7,6 +7,7 @@ import os
 import sys
 import traceback
 from util.change import change
+from util.homogenize import homogenize
 from columns import Columns
 from calc_length import calc_length
 
@@ -32,13 +33,19 @@ class GerJobPdZd(object):
             formatout = ''
             start = 1
             bookin = file(self.book).readlines()
+            bookin = homogenize(bookin, cbl=True)
             for line in bookin:
                 if 'PIC' not in line:
                     continue
+                splt_pic = line.split('PIC')[1]
+                repl_pic = splt_pic.replace(' USAGE ', '').replace('COMP-3', '').replace('COMP', '').rstrip()
                 ap = ' OUTREC FIELDS=(' if start == 1 else '                 '
-                length = int(str(calc_length(line.replace('COMP-3', ''))['lrecl']))
+                length = int(str(calc_length(line.replace(splt_pic, repl_pic))['lrecl']))
                 lenpd  = calc_length(line)['lrecl']
-                pd2zd = 'PD,TO=ZD,LENGTH={:03},'.format(length) if 'COMP-3' in line else ''
+                pd2zd = ('PD,TO=ZD,LENGTH={:03},'.format(length)
+                                                 if 'COMP-3' in splt_pic else
+                         'BI,TO=ZD,LENGTH={:03},'.format(length)
+                                                 if 'COMP' in splt_pic else '')
                 formatout += '{}{:03},{:03},{}\n'.format(ap, start, lenpd, pd2zd)
                 start += lenpd
 

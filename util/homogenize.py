@@ -6,12 +6,13 @@
 '''
 
 from HOFs import *
-def homogenize(book):
+def homogenize(book, cbl=False):
+    inlin = '      ' if cbl else ''
     clearLines = map(l672, filter(all3(isNotRem, isNotBlank, isNotEjectOrSkip), book))
     joinLines = []
     holder = []
     for l in clearLines:
-        holder.append(l if not holder else l.strip())
+        holder.append(inlin + l if not holder else l.strip())
         if l.endswith('.'):
             joinLines.append(" ".join(holder))
             holder = []
