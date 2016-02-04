@@ -3,4 +3,4 @@
 from distutils.core import setup
 import py2exe
 
-setup(console=["jobpk2zd.py"])
+setup(console=["icetool.py"])
