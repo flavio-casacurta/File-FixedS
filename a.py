@@ -12,3 +12,5 @@ bkin = map(l672, filter(all3(isNotRem, isNotBlank, isNotEjectOrSkip), bkin))
 word(bkin[0],1)
 #teste do commit via pycharm
 #teste do commit via pycharm 5.0.4
+#teste do commit via pycharm 5.0.4
+
