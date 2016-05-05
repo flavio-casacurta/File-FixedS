@@ -3,4 +3,4 @@
 from distutils.core import setup
 import py2exe
 
-setup(console=["icetool.py"])
+setup(console=["Hex2Zip.py"])
