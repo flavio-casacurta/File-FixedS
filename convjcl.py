@@ -36,6 +36,7 @@ else:
 
 try:
     jcl = open(jclinf).readlines()
+    manterPrefix = False
     if jcl[0].startswith('//'):
         temprefix = False
     else:
@@ -59,14 +60,15 @@ try:
     if len(jobs) == 0:
         print 'Faltou Cartao JOB'
     elif len(jobs) > 1:
-        sepjcl = raw_input(u'Separar JCL? "S/N": ').upper()
-        while True:
-            if sepjcl in ('S', 'N'):
-                sepjcl = True if sepjcl == 'S' else False
-                break
-            else:
-                print 'Ops! Informe "S" ou "N"\n'
-                sepjcl = raw_input('Tente Novamente: ').upper()
+        if not manterPrefix:
+            sepjcl = raw_input(u'Separar JCL? "S/N": ').upper()
+            while True:
+                if sepjcl in ('S', 'N'):
+                    sepjcl = True if sepjcl == 'S' else False
+                    break
+                else:
+                    print 'Ops! Informe "S" ou "N"\n'
+                    sepjcl = raw_input('Tente Novamente: ').upper()
 
         if temprefix:
             if manterPrefix:
