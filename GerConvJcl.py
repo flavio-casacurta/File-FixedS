@@ -33,7 +33,7 @@ subForm = lambda line: re.sub('%%FORM#....', '%%FORM#!!!!', line)
 
 class GerConvJcl(object):
 
-    def __init__(self, jclinf, path, temprefix, sepjcl, jclcnv, ambiente, ambdest):
+    def __init__(self, jclinf, path, temprefix, sepjcl, jclcnv, ambiente, ambdest, jobs):
         self.jclinf = jclinf
         self.path = path
         self.temprefix = temprefix
@@ -41,6 +41,7 @@ class GerConvJcl(object):
         self.jclcnv = jclcnv
         self.ambiente = ambiente
         self.ambdest = ambdest
+        self.jobs = jobs
 
     def gerconvjcl(self):
         try:
@@ -71,8 +72,6 @@ class GerConvJcl(object):
                     jclconv.append(self.linDsn(line))
                 elif isexec(line):
                     jclconv.append(self.linExec(line))
-                elif isexec(line):
-                    jclconv.append(self.linExec(line))
                 elif isdcb(line):
                     jclconv.append(self.linDcb(line))
                 elif isform(line):
@@ -80,7 +79,7 @@ class GerConvJcl(object):
                 else:
                     jclconv.append(self.linMisc(line))
 
-            if self.sepjcl:
+            if (self.sepjcl or len(self.jobs) == 1) and not self.temprefix:
                 self.writeseparate(jclconv)
             else:
                 self.writejoin(jclconv)
@@ -93,6 +92,8 @@ class GerConvJcl(object):
     def linDsn(self,line):
         rpo = '{}.{}'.format(self.dicAmb[lisAmbiente[0][self.de]], self.dicJob[lisPrejob[0][self.de]])
         dsn = line.split('=')[1].split(',')[0]
+        if '(' in dsn:
+            dsn = dsn.split('(')[0]
         if self.de == 1 and dsn[:2] == 'MJ':
             dsnn = dsn.replace('MJ', 'MX')
             if dsnn in self.dicDsn.keys():
@@ -117,10 +118,11 @@ class GerConvJcl(object):
 
     def linExec(self,line):
         exc = nextWord('EXEC', line).rsplit(',')[0]
+        if exc.startswith('PGM='):
+            exc = exc.split('=')[1]
         if exc in self.dicExec.keys():
-            return self.linPrefix(line.replace(exc, self.dicExec[exc]))
-        else:
-            return self.linPrefix(line)
+            line = line.replace(exc, self.dicExec[exc])
+        return self.linPrefix(line)
 
 
     def linDcb(self,line):

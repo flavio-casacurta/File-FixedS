@@ -3,4 +3,4 @@
 from distutils.core import setup
 import py2exe
 
-setup(console=["Hex2Zip.py"])
+setup(console=["convjcl.py"])

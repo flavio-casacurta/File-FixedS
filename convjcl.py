@@ -1,3 +1,4 @@
+import re
 import os
 import sys
 import traceback
@@ -36,6 +37,8 @@ else:
 
 try:
     jcl = open(jclinf).readlines()
+    isvalid = lambda line: r'// REP' not in line and r'// ADD' not in line and r'// DEL' not in line
+    jcl = filter(isvalid, jcl)
     manterPrefix = False
     if jcl[0].startswith('//'):
         temprefix = False
@@ -59,16 +62,19 @@ try:
 
     if len(jobs) == 0:
         print 'Faltou Cartao JOB'
-    elif len(jobs) > 1:
-        if not manterPrefix:
-            sepjcl = raw_input(u'Separar JCL? "S/N": ').upper()
-            while True:
-                if sepjcl in ('S', 'N'):
-                    sepjcl = True if sepjcl == 'S' else False
-                    break
-                else:
-                    print 'Ops! Informe "S" ou "N"\n'
-                    sepjcl = raw_input('Tente Novamente: ').upper()
+    if not re.findall(r'//.{8} JOB ', jcl[0]):
+        print 'Primeiro cartao tem que ser Cartao JOB'
+    else:
+        if len(jobs) > 1:
+            if not manterPrefix:
+                sepjcl = raw_input(u'Separar JCL? "S/N": ').upper()
+                while True:
+                    if sepjcl in ('S', 'N'):
+                        sepjcl = True if sepjcl == 'S' else False
+                        break
+                    else:
+                        print 'Ops! Informe "S" ou "N"\n'
+                        sepjcl = raw_input('Tente Novamente: ').upper()
 
         if temprefix:
             if manterPrefix:
@@ -101,7 +107,7 @@ try:
                 print u'Informe o Ambiente de destino ' + sdest + ':\n'
                 ambdest = raw_input('Tente Novamente: ').upper()
 
-        gercjcl = GerConvJcl(jclinf, path, temprefix, sepjcl, jclcnv, ambiente, ambdest)
+        gercjcl = GerConvJcl(jclinf, path, temprefix, sepjcl, jclcnv, ambiente, ambdest, jobs)
         gercjob = gercjcl.gerconvjcl()
 
         if gercjob[0]:
