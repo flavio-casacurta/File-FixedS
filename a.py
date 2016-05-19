@@ -1,4 +1,4 @@
-from HOFs import *
+from util.HOFs import *
 from columns import Columns
 book = r'c:\Publico\Flavio\CMTF\CPY\CMTFW22A.cpy'
 col = Columns()
