@@ -1,6 +1,6 @@
 from HOFs import *
 from columns import Columns
-book = r'H:\Publico\Flavio\CMTF\CPY\CMTFW22A.cpy'
+book = r'c:\Publico\Flavio\CMTF\CPY\CMTFW22A.cpy'
 col = Columns()
 bkout = col.columns(book,fmt='cbl')
 bkout

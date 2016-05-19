@@ -6,7 +6,6 @@
 """
 
 from util.HOFs import *
-from util.CobolPatterns import *
 from util.homogenize import homogenize
 
 def calc_length(copy):
@@ -34,15 +33,14 @@ def calc_length(copy):
     lvlocc = 0
 
     for line in lines:
-        match = CobolPatterns.row_pattern.match(line.strip())
-        if not match:
-            continue
-        match = match.groupdict()
+        line = line[:-1]
 
-        if not match['level']:
+        wrd, wrds = words(line)
+
+        if not wrds[0].isdigit():
             continue
 
-        level = int(match['level'])
+        level = int(wrds[0])
 
         if redefines:
             if level > lvlred:
@@ -50,35 +48,36 @@ def calc_length(copy):
         redefines = False
         lvlred = 0
 
-        if match['redefines']:
+        if 'REDEFINES' in wrds:
             lvlred = level
             redefines = True
             continue
 
         if occurs:
             if level > lvlocc:
-                if match['pic']:
-                    locc += lenfield(match['pic'], match['usage'])
+                if 'PIC' in wrds:
+                    locc += lenfield(wrds[wrds.index('PIC') + 1:])
                 continue
             lrecl += locc * occurs
         occurs = False
         lvlocc = 0
 
-        if match['occurs']:
+        if 'OCCURS' in wrds:
             lvlocc = level
             occurs = (int(nextWord('OCCURS', line)) if 'TO' not in wrds else
                       int(nextWord('TO', line)))
 
-        if match['pic']:
+        if 'PIC' in wrds:
             if occurs:
-                locc += lenfield(match['pic'], match['usage'])
+                locc += lenfield(wrds[wrds.index('PIC') + 1:])
             else:
-                lrecl += lenfield(match['pic'], match['usage'])
+                lrecl += lenfield(wrds[wrds.index('PIC') + 1:])
 
     return {'retorno': True, 'msg': None, 'lrecl': lrecl}
 
 
-def lenfield(pic, usage):
+def lenfield(attrs):
+    pic = attrs[0]
     if pic[0] == 'S':
         pic = pic[1:]
     pap = pic.find('(')
@@ -106,14 +105,11 @@ def lenfield(pic, usage):
 
     lentmp = inteiros + decimais
 
-    if not usage:
-        usage = 'DISPLAY'
-
-    if 'COMP-3' in usage or 'COMPUTATIONAL-3' in usage:
+    if 'COMP-3' in attrs or 'COMPUTATIONAL-3' in attrs:
         lrecl = lentmp / 2 + 1
-    elif 'COMP' in usage or 'COMPUTATIONAL' in usage or 'BINARY' in usage:
+    elif 'COMP' in attrs or 'COMPUTATIONAL' in attrs or 'BINARY' in attrs:
         lrecl = lentmp / 2
-    elif 'SIGN' in usage:
+    elif 'SIGN' in attrs:
         lrecl = lentmp + 1
     else:
         lrecl = lentmp
