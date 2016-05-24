@@ -78,20 +78,33 @@ def calc_length(copy):
     return {'retorno': True, 'msg': None, 'lrecl': lrecl}
 
 
-def lenfield(pic_str, usage):
-    if pic_str[0] == 'S':
-        pic_str = pic_str[1:]
+def lenfield(pic, usage):
+    if pic[0] == 'S':
+        pic = pic[1:]
+    pap = pic.find('(')
+    decimais = 0
+    if pap == -1:
+        if 'V' in pic:
+            inteiros = pic.index('V')
+            decimais = len(pic) - (inteiros + 1)
+        else:
+            inteiros = len(pic)
+    else:
+        if 'V' in pic:
+            inttmp = pic[:pic.index('V')]
+            dectmp = pic[pic.index('V') + 1:]
+            if '(' in inttmp:
+                inteiros = int(inttmp[inttmp.index('(') + 1:inttmp.index(')')])
+            else:
+                inteiros = len(inttmp)
+            if '(' in dectmp:
+                decimais = int(dectmp[dectmp.index('(') + 1:dectmp.index(')')])
+            else:
+                decimais = len(dectmp)
+        else:
+            inteiros = int(pic[pap + 1:pic.index(')')])
 
-    while True:
-        match = CobolPatterns.pic_pattern_repeats.search(pic_str)
-
-        if  not match:
-            break
-
-        expanded_str = match.group(1) * int(match.group(2))
-        pic_str = CobolPatterns.pic_pattern_repeats.sub(expanded_str, pic_str, 1)
-
-    lentmp = len(pic_str.replace('V', ''))
+    lentmp = inteiros + decimais
 
     if not usage:
         usage = 'DISPLAY'
