@@ -2,8 +2,7 @@ import os
 import re
 from util.HOFs import *
 from util.homogenize import homogenize
-from util.CobolPatterns import *
-from attribute_new import Attribute
+from attribute import Attribute
 
 class Columns(object):
 
@@ -21,58 +20,55 @@ class Columns(object):
         redefines = False
         lvlAnt = 0
 
-        for line in lines:
+        for lin in lines:
 
-            match = CobolPatterns.row_pattern.match(line.strip())
-
-            if not match:
-                continue
-
-            match = match.groupdict()
-
-            if not match['level']:
-                continue
-
-            line = line[:-1]
+            line = lin[:-1]
             if self.fmt != 'json':
                 line = ' ' * 6 + line
 
-            level = int(match['level'])
+            wrd, wrds = words(line)
+
+            if not wrds[0].isdigit():
+                continue
+
+            level = int(wrds[0])
 
             if redefines:
                 if level > lvlAnt:
                     continue
             redefines = False
 
-            if match['redefines']:
+            if 'REDEFINES' in wrds:
                 lvlAnt = level
                 redefines = True
                 continue
 
-            if not match['pic']:
+            if 'PIC' not in wrds:
                 if self.fmt != 'json':
                     addColumns.append(line + '.\n')
                 continue
 
-            dataname = match['name'].replace('-','_').lower()
+            dataname = wrds[1].lower().replace('-','_')
             if dataname == 'filler':
                filler+=1
                dataname = '{}_{}_{:02}'.format(basename.lower(), dataname, filler)
 
+            picture = line.split('PIC')[1].split()
+            pic = picture[0]
+            usage = picture[1] if len(picture) > 1 and picture[1] != 'VALUE' else None
+            occurs = picture[2:] if len(picture) > 2 and picture[2] == 'OCCURS' else None
             if self.fmt == 'json':
-                type, length, decimals, sign = self.attr.attribute_json(match['pic']
-                                                                       ,match['usage']
-                                                                       ,match['occurs']
-                                                                       ,signal)
+                type, length, decimals, sign = self.attr.attribute_json(pic, usage, occurs, signal)
 
                 jCol = ('{}"field": "{}", "type": "{}", "length": "{}", "decimals": "{}", "sign": '
                         '"{}"{}\n').format('{', dataname, type, length, decimals, sign, '}')
                 addColumns.append(jCol)
             else:
-                splt_pic = line.split('PIC')[1].strip()
-                lCol = line.replace(splt_pic, match['pic'])
+                splt_pic = line.split('PIC')[1]
+                repl_pic = splt_pic.replace(' USAGE ', '').replace('COMP-3', '').replace('COMP', '').rstrip()
+                lCol = line.replace(splt_pic, repl_pic)
                 sign = '.\n'
-                if match['pic'][0] == 'S':
+                if pic[0] == 'S':
                     if signal:
                         sign = ' SIGN TRAILING SEPARATE.\n'
                     else:
