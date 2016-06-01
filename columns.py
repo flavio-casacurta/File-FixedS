@@ -3,7 +3,7 @@ import re
 from util.HOFs import *
 from util.homogenize import homogenize
 from util.CobolPatterns import *
-from attribute_new import Attribute
+from attribute import Attribute
 
 class Columns(object):
 
@@ -69,8 +69,7 @@ class Columns(object):
                         '"{}"{}\n').format('{', dataname, type, length, decimals, sign, '}')
                 addColumns.append(jCol)
             else:
-                splt_pic = line.split('PIC')[1].strip()
-                lCol = line.replace(splt_pic, match['pic'])
+                lCol = line.replace(line.split('PIC')[1].strip(), match['pic'])
                 sign = '.\n'
                 if match['pic'][0] == 'S':
                     if signal:

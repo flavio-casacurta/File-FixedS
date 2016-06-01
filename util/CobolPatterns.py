@@ -10,7 +10,7 @@ class CobolPatterns:
     row_pattern_redefines = r"\s+REDEFINES\s(?P<redefines>\S+)"
     row_pattern_pic = r'\s+PIC\s+(?P<pic>\S+)'
     row_pattern_usage = r'\s+(USAGE\s+)?(IS\s+)?(?P<usage>\S+)'
-    row_pattern_remainder = r'.*'
+    row_pattern_remainder = r'(?P<remainder>.*)'
     row_pattern_end = r'\.$'
 
     row_pattern = re.compile(row_pattern_base +
@@ -25,3 +25,5 @@ class CobolPatterns:
     pic_pattern_repeats = re.compile(r'(.)\((\d+)\)')
     pic_pattern_float = re.compile(r'S?[9Z]*[.V][9Z]+')
     pic_pattern_integer = re.compile(r'S?[9Z]+')
+
+    row_pattern_value = re.compile(r'\s+VALUE(S)?\s+(IS\s+)?(ARE\s+)?(?P<value>\S+)')
