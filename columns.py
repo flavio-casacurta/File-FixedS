@@ -65,7 +65,7 @@ class Columns(object):
                                                                        ,match['occurs']
                                                                        ,signal)
 
-                jCol = ('{}"field": "{}", "type": "{}", "length": "{}", "decimals": "{}", "sign": '
+                jCol = ('{}"field": "{}", "type": "{}", "length": {}, "decimals": {}, "sign": '
                         '"{}"{}\n').format('{', dataname, type, length, decimals, sign, '}')
                 addColumns.append(jCol)
             else:

@@ -27,55 +27,55 @@ class Fixed_files(object):
             except:
                 attrs = []
 
-        self.lattrs = self.set_signal([json.loads(line.decode('utf-8')) for line in attrs])
+        self.lattrs = [json.loads(line.decode('utf-8')) for line in attrs]
 
         self.attr = [att['field'] for att in self.lattrs]
 
         start = 0
         for att in self.lattrs:
-            if att['sign']:
-                att['length'] = att['length'] + 1
-            exec ("self.{} = slice({}, {})".format(att['field'], start, (start + att['length'])))
-            start += att['length']
+            if eval(att['sign']):
+                att['length'] = str(int(att['length']) + 1)
+            exec ("self.{} = slice({}, {})".format(att['field'], start, (start + int(att['length']))))
+            start += int(att['length'])
 
         self.slices = ''
         for att in self.lattrs:
             if att['type'] == 'str':
                 self.slices += 'record[self.{}], '.format(att['field'])
             elif att['type'] == 'int':
-                if att['decimals']:
+                if int(att['decimals']):
                     self.slices += 'round('
-                if att['sign']:
+                if eval(att['sign']):
                     self.slices += "int(record[self.{0}][:-1])*int(record[self.{0}][-1]+{1})".format(
                          att['field'], "'1'")
                 else:
                     self.slices += 'int(record[self.{}])'.format(att['field'])
-                if att['decimals']:
+                if int(att['decimals']):
                     self.slices += ' * .{0:>0{1}}, {1})'.format('1', att['decimals'])
                 self.slices += ', '
 
         fmt_out_str = ''
         fmt_out_fmt = ''
         for att in self.lattrs:
-            if att['sign']:
+            if eval(att['sign']):
                 att['length'] = str(int(att['length']) - 1)
             if att['type'] == 'str':
-                fmt_out_str += "{}".format('{:<' + str(att['length']) + '}')
+                fmt_out_str += "{}".format('{:<' + att['length'] + '}')
                 if self.dic:
                     fmt_out_fmt += 'record["{}"][:{}], '.format(att['field'], att['length'])
                 else:
                     fmt_out_fmt += 'record.{}[:{}], '.format(att['field'], att['length'])
             elif att['type'] == 'int':
-                if att['decimals']:
-                    dec = ' * {}'.format(int('{:<0{}}'.format('1', att['decimals']+1)))
+                if int(att['decimals']):
+                    dec = ' * {}'.format(int('{:<0{}}'.format('1', int(att['decimals'])+1)))
                 else:
                     dec = ''
-                if att['sign']:
-                    fmt_out_str += '{}'.format('{:>0' + str(att['length']) + '}{}')
+                if eval(att['sign']):
+                    fmt_out_str += '{}'.format('{:>0' + att['length'] + '}{}')
                 else:
-                    fmt_out_str += '{}'.format('{:>0' + str(att['length']) + '}')
+                    fmt_out_str += '{}'.format('{:>0' + att['length'] + '}')
                 if self.dic:
-                    if att['sign']:
+                    if eval(att['sign']):
                         fmt_out_fmt += '''str(int(round(record["{0}"]{1}, 0) * -1))[:{2}]
                                           if record["{0}"] < 0
                                           else str(int(round(record["{0}"]{1}, 0)))[:{2}],
@@ -88,7 +88,7 @@ class Fixed_files(object):
                                                                               dec,
                                                                               att['length'])
                 else:
-                    if att['sign']:
+                    if eval(att['sign']):
                         fmt_out_fmt += '''str(int(round(record.{0}{1}, 0) * -1))[:{2}]
                                           if record.{0} < 0
                                           else str(int(round(record.{0}{1}, 0)))[:{2}],
@@ -121,13 +121,3 @@ class Fixed_files(object):
 
         return eval("{}".format(self.fmt_out))
 
-
-    def set_signal(self, attrs):
-        nlattrs = []
-        for att in attrs:
-            if att['sign'] == 'False':
-               att['sign'] = 0
-            else:
-               att['sign'] = 1
-            nlattrs.append(att)
-        return nlattrs
