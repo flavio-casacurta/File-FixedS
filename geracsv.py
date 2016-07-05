@@ -11,7 +11,7 @@ def geracsv(book, records, arq, signal):
         basename = os.path.basename(book).split('.')[0]
         col = Columns()
         js = col.columns(book, signal=signal)
-        fj = [eval(line.replace('\n', '')) for line in js]
+        fj = [json.loads(line.decode('utf-8')) for line in js]
         ff = Fixed_files(fj, obj=True)
         rec_in = []
         for record in records:

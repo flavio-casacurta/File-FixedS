@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import json
 from collections import namedtuple
 from Exceptions import FieldLengthOverflow
 
@@ -14,17 +15,15 @@ class Fixed_files(object):
         self.dic = dic
         self.checklength = checklength
 
-        if obj:
-            self.lattrs = filejson
-        else:
-            try:
+        try:
+            if obj:
+                self.lattrs = filejson
+            else:
                 filejson = filejson if filejson.endswith('.json') else '{}.json'.format(filejson)
-                self.lattrs = []
-                with open(filejson) as fj:
-                    for line in fj.readlines():
-                        self.lattrs.append(eval(line))
-            except:
-                self.lattrs = []
+                attrs = open(filejson).readlines()
+                self.lattrs = [json.loads(line.decode('utf-8')) for line in attrs]
+        except:
+            self.lattrs = []
 
         self.attr = [att['field'] for att in self.lattrs]
 

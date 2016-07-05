@@ -100,12 +100,12 @@ class Attribute(object):
         usage = 'DISPLAY' if not usage else usage
         decimals = 0
 
-        sign = False
+        sign = 'false'
 
         if  pic_str[0] == 'S':
             pic_str = pic_str[1:]
             if signal == True:
-                sign = True
+                sign = 'true'
 
         pic_str0 = pic_str[0] if not occurs else 'X'
 
