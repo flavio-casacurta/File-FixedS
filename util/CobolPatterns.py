@@ -22,7 +22,7 @@ class CobolPatterns:
                              row_pattern_remainder +
                              row_pattern_end)
 
-    pic_pattern_repeats = re.compile(r'(.)\((\d+)\)')
+    pic_pattern_repeats = re.compile(r'(?P<constant>.)\((?P<repeat>\d+)\)')
     pic_pattern_float = re.compile(r'S?9*V9+')
     pic_pattern_float_edit = re.compile(r'S?[9Z]*[,][9Z]+')
     pic_pattern_integer = re.compile(r'S?9+(?!V)9+$')

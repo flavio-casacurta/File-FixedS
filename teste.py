@@ -1,5 +1,5 @@
 from fixed_files import Fixed_files
-ff = Fixed_files('record', dic=False, checklength=False)
+ff = Fixed_files('record1', dic=False, checklength=False)
 records = open('record.txt').readlines()
 rec_in = []
 for record in records:

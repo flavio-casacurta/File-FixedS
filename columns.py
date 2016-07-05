@@ -66,7 +66,7 @@ class Columns(object):
                                                                        ,signal)
 
                 jCol = ('{}"field": "{}", "type": "{}", "length": {}, "decimals": {}, "sign": '
-                        '"{}"{}\n').format('{', dataname, type, length, decimals, sign, '}')
+                        '{}{}\n').format('{', dataname, type, length, decimals, sign, '}')
                 addColumns.append(jCol)
             else:
                 lCol = line.replace(line.split('PIC')[1].strip(), match['pic'])

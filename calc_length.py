@@ -66,8 +66,7 @@ def calc_length(copy):
 
         if match['occurs']:
             lvlocc = level
-            occurs = (int(nextWord('OCCURS', line)) if 'TO' not in wrds else
-                      int(nextWord('TO', line)))
+            occurs = match['occurs']
 
         if match['pic']:
             if occurs:
@@ -88,22 +87,21 @@ def lenfield(pic_str, usage):
         if  not match:
             break
 
-        expanded_str = match.group(1) * int(match.group(2))
+        match = match.groupdict()
+        expanded_str = match['constant'] * int(match['repeat'])
         pic_str = CobolPatterns.pic_pattern_repeats.sub(expanded_str, pic_str, 1)
 
-    lentmp = len(pic_str.replace('V', ''))
+    len_fied = len(pic_str.replace('V', ''))
 
     if not usage:
         usage = 'DISPLAY'
 
     if 'COMP-3' in usage or 'COMPUTATIONAL-3' in usage:
-        lrecl = lentmp / 2 + 1
+        len_fied = len_fied / 2 + 1
     elif 'COMP' in usage or 'COMPUTATIONAL' in usage or 'BINARY' in usage:
-        lrecl = lentmp / 2
+        len_fied = len_fied / 2
     elif 'SIGN' in usage:
-        lrecl = lentmp + 1
-    else:
-        lrecl = lentmp
+        len_fied += 1
 
-    return lrecl
+    return len_fied
 

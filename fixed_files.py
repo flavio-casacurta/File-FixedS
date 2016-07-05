@@ -1,15 +1,13 @@
 # -*- coding: utf-8 -*-
 
-from __future__ import absolute_import, unicode_literals
-import json
 from collections import namedtuple
 from Exceptions import FieldLengthOverflow
 
 
 __author__ = 'flavio@casacurta.com'
 
-class Fixed_files(object):
 
+class Fixed_files(object):
 
     def __init__(self, filejson, obj=False, dic=False, checklength=False):
 
@@ -17,17 +15,16 @@ class Fixed_files(object):
         self.checklength = checklength
 
         if obj:
-            attrs = filejson
+            self.lattrs = filejson
         else:
             try:
-                if filejson.endswith('.json'):
-                    attrs = open(filejson).readlines()
-                else:
-                    attrs = open('{}.json'.format(filejson)).readlines()
+                filejson = filejson if filejson.endswith('.json') else '{}.json'.format(filejson)
+                self.lattrs = []
+                with open(filejson) as fj:
+                    for line in fj.readlines():
+                        self.lattrs.append(eval(line))
             except:
-                attrs = []
-
-        self.lattrs = self.set_signal([json.loads(line.decode('utf-8')) for line in attrs])
+                self.lattrs = []
 
         self.attr = [att['field'] for att in self.lattrs]
 
@@ -120,14 +117,3 @@ class Fixed_files(object):
     def unparse(self, record):
 
         return eval("{}".format(self.fmt_out))
-
-
-    def set_signal(self, attrs):
-        nlattrs = []
-        for att in attrs:
-            if att['sign'] == 'False':
-               att['sign'] = 0
-            else:
-               att['sign'] = 1
-            nlattrs.append(att)
-        return nlattrs

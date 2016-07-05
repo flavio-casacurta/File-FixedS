@@ -40,7 +40,8 @@ class Attribute(object):
             if  not match:
                 break
 
-            expanded_str = match.group(1) * int(match.group(2))
+            match = match.groupdict()
+            expanded_str = match['constant'] * int(match['repeat'])
             pic_str = CobolPatterns.pic_pattern_repeats.sub(expanded_str, pic_str, 1)
 
         length = len(pic_str.replace('V', ''))
@@ -114,7 +115,8 @@ class Attribute(object):
             if  not match:
                 break
 
-            expanded_str = match.group(1) * int(match.group(2))
+            match = match.groupdict()
+            expanded_str = match['constant'] * int(match['repeat'])
             pic_str = CobolPatterns.pic_pattern_repeats.sub(expanded_str, pic_str, 1)
 
         length = len(pic_str.replace('V', ''))
