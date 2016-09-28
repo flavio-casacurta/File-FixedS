@@ -7,7 +7,7 @@
 
 from util.HOFs import *
 from util.CobolPatterns import *
-from util.homogenize import homogenize
+from util.homogenize import Homogenize
 
 def calc_length(copy):
     if isinstance(copy, list):
@@ -18,7 +18,7 @@ def calc_length(copy):
         else:
             book = []
 
-    lines = homogenize(book)
+    lines = Homogenize(book)
 
     havecopy = filter(isCopy, lines)
     if havecopy:

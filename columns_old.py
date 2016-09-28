@@ -1,7 +1,7 @@
 import os
 import re
 from util.HOFs import *
-from util.homogenize import homogenize
+from util.homogenize import Homogenize
 from attribute import Attribute
 
 class Columns(object):
@@ -13,7 +13,7 @@ class Columns(object):
         self.fmt = fmt
         basename = os.path.basename(file).split('.')[0]
         file = open(file).readlines()
-        lines = homogenize(file)
+        lines = Homogenize(file)
 
         addColumns = []
         filler = 0

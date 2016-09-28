@@ -10,7 +10,7 @@ from datetime import date
 from util.HOFs import *
 from util.insAster72 import insAster72
 from util.change import change
-from util.homogenize import homogenize
+from util.homogenize import Homogenize
 from columns import Columns
 from calc_length import calc_length
 
@@ -35,7 +35,7 @@ class GerPgmZdPd(object):
 
             lengthin = str(calc_length(bookin)['lrecl'])
             regin  = 'WRK-ARQINPZD-REGISTRO'
-            bookout = homogenize(bookout)
+            bookout = Homogenize(bookout)
 
             if int(word(bookout[0],1)) == 1:
                regout = word(bookout[0],2).replace('.','')

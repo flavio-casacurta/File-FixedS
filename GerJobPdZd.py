@@ -7,7 +7,7 @@ import os
 import sys
 import traceback
 from util.change import change
-from util.homogenize import homogenize
+from util.homogenize import Homogenize
 from columns import Columns
 from calc_length import calc_length
 
@@ -33,7 +33,7 @@ class GerJobPdZd(object):
             formatout = ''
             start = 1
             bookin = file(self.book).readlines()
-            bookin = homogenize(bookin, cbl=True)
+            bookin = Homogenize(bookin, cbl=True)
             for line in bookin:
                 if 'PIC' not in line:
                     continue

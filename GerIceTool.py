@@ -8,7 +8,7 @@ import sys
 import traceback
 from util.HOFs import *
 from util.change import change
-from util.homogenize import homogenize
+from util.homogenize import Homogenize
 from calc_length import calc_length
 
 class GerIceTool(object):
@@ -26,7 +26,7 @@ class GerIceTool(object):
             header = ''
             start = 1
             bookin = file(self.book).readlines()
-            bookin = homogenize(bookin, cbl=True)
+            bookin = Homogenize(bookin, cbl=True)
             for line in bookin:
                 if not isPic(line):
                     continue

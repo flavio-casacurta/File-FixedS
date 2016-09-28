@@ -7,7 +7,7 @@
 
 from util.HOFs import *
 from util.CobolPatterns import *
-from util.homogenize import homogenize
+from util.homogenize import Homogenize
 
 def calc_length(copy):
     if isinstance(copy, list):
@@ -18,20 +18,20 @@ def calc_length(copy):
         else:
             book = []
 
-    lines = homogenize(book)
+    lines = Homogenize(book)
 
     havecopy = filter(isCopy, lines)
     if havecopy:
         bkm = ''.join(havecopy[0].split('COPY')[1].replace('.', '').split())
         msg = 'COPY {} deve ser expandido.'.format(bkm)
-        return {'retorno': False, 'msg': msg, 'lrecl': 0}
+        return {'retorno': False, 'msg': msg, 'logical_record_length': 0}
 
-    lrecl = 0
+    logical_record_length = 0
     redefines = False
     occurs = False
-    locc = 0
-    lvlred = 0
-    lvlocc = 0
+    occurs_length = 0
+    level_redefines = 0
+    level_occurs = 0
 
     for line in lines:
         match = CobolPatterns.row_pattern.match(line.strip())
@@ -45,39 +45,39 @@ def calc_length(copy):
         level = int(match['level'])
 
         if redefines:
-            if level > lvlred:
+            if level > level_redefines:
                 continue
         redefines = False
-        lvlred = 0
+        level_redefines = 0
 
         if match['redefines']:
-            lvlred = level
+            level_redefines = level
             redefines = True
             continue
 
         if occurs:
-            if level > lvlocc:
+            if level > level_occurs:
                 if match['pic']:
-                    locc += lenfield(match['pic'], match['usage'])
+                    occurs_length += FieldLength(match['pic'], match['usage'])
                 continue
-            lrecl += locc * occurs
+            logical_record_length += occurs_length * occurs
         occurs = False
-        lvlocc = 0
+        level_occurs = 0
 
         if match['occurs']:
-            lvlocc = level
+            level_occurs = level
             occurs = match['occurs']
 
         if match['pic']:
             if occurs:
-                locc += lenfield(match['pic'], match['usage'])
+                occurs_length += FieldLength(match['pic'], match['usage'])
             else:
-                lrecl += lenfield(match['pic'], match['usage'])
+                logical_record_length += FieldLength(match['pic'], match['usage'])
 
-    return {'retorno': True, 'msg': None, 'lrecl': lrecl}
+    return {'retorno': True, 'msg': None, 'logical_record_length': logical_record_length}
 
 
-def lenfield(pic_str, usage):
+def FieldLength(pic_str, usage):
     if pic_str[0] == 'S':
         pic_str = pic_str[1:]
 
@@ -91,17 +91,17 @@ def lenfield(pic_str, usage):
         expanded_str = match['constant'] * int(match['repeat'])
         pic_str = CobolPatterns.pic_pattern_repeats.sub(expanded_str, pic_str, 1)
 
-    len_fied = len(pic_str.replace('V', ''))
+    len_field = len(pic_str.replace('V', ''))
 
     if not usage:
         usage = 'DISPLAY'
 
     if 'COMP-3' in usage or 'COMPUTATIONAL-3' in usage:
-        len_fied = len_fied / 2 + 1
+        len_field = len_field / 2 + 1
     elif 'COMP' in usage or 'COMPUTATIONAL' in usage or 'BINARY' in usage:
-        len_fied = len_fied / 2
+        len_field = len_field / 2
     elif 'SIGN' in usage:
-        len_fied += 1
+        len_field += 1
 
-    return len_fied
+    return len_field
 

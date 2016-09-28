@@ -6,6 +6,7 @@
 import os
 import sys
 import traceback
+import codecs
 
 isLrecl = lambda line: 'LRECL' in line
 isZone = lambda line: line.startswith('ZONE')
@@ -61,14 +62,19 @@ class GerHex2Bin(object):
                 if stop:
                     break
 
-            arqbin = self.arq.split('.')[0] + '.bin'
-            with open(arqbin, 'w') as bin:
+            basename = self.arq.split('.')[0]
+            arqbin = basename + '.bin'
+            arqasc = basename + '_ascii.txt'
+            with open(arqbin, 'wb') as bin, open(arqasc, 'wb') as asc:
                 for r in xrange(len(lzone)):
                     zn = zip(lzone[r], lnumr[r])
-                    tmp = ''
+                    ebc = ''
                     for z, n in zn:
-                        tmp += chr(int(z+n, 16))
-                    bin.write(tmp)
+                        ebc += chr(int(z+n, 16))
+
+                    bin.write(ebc)
+
+                    asc.write(codecs.decode(ebc, "cp500").encode('ASCII', 'replace') + '\n')
 
             return True, None
         except:
