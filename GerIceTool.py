@@ -8,6 +8,7 @@ import sys
 import traceback
 from util.HOFs import *
 from util.change import change
+from util.CobolPatterns import *
 from util.homogenize import Homogenize
 from calc_length import calc_length
 
@@ -25,21 +26,27 @@ class GerIceTool(object):
         try:
             header = ''
             start = 1
-            bookin = file(self.book).readlines()
-            bookin = Homogenize(bookin, cbl=True)
+            bookin = Homogenize(file(self.book).readlines(), cbl=True)
             for line in bookin:
-                if not isPic(line):
+                match = CobolPatterns.row_pattern.match(line.strip())
+                if not match:
                     continue
-                col = l672(line).split()[1].replace(self.prefix, '')
-                splt_pic = line.split('PIC')[1].strip()
-                pic = '9' if splt_pic[0] == 'S' else splt_pic[0]
+                match = match.groupdict()
+                if not match['pic']:
+                    continue
+                col = match['name'].replace(self.prefix, '')
+                pic_str = match['pic']
+                if pic_str[0] == 'S':
+                    pic_str = pic_str[1:]
+                pic = pic_str[0]
                 length  = calc_length(line)['lrecl']
                 if col == 'FILLER':
                     start += length
                     continue
-                hdr = ('ZD' + self.decimals(splt_pic) if 'COMP' not in splt_pic and pic == '9' else
-                       'PD' + self.decimals(splt_pic) if 'COMP-3' in splt_pic else
-                       'BI' if 'COMP' in splt_pic else
+                usage = match['usage'] if match['usage'] else ''
+                hdr = ('ZD' + self.decimals(pic_str) if 'COMP' not in usage and pic == '9' else
+                       'PD' + self.decimals(pic_str) if 'COMP-3' in usage else
+                       'BI' if 'COMP' in usage else
                        'CH')
                 header += """ HEADER('{:30} ON({},{},{}) -\n""".format(col + "')"
                                                                      , start, length, hdr)
@@ -59,30 +66,25 @@ class GerIceTool(object):
         except:
             return (False, traceback.format_exc(sys.exc_info))
 
-    def decimals(self, pic):
-        pic = pic.split()[0]
+    def decimals(self, pic_str):
         ret = ''
-        if 'V' in pic:
-            if pic[0] == 'S':
-                pic = pic[1:]
-            integer, decimal = pic.split('V')
-            pap = decimal.find('(')
-            if pap == -1:
-                decimal = len(decimal)
-            else:
-                try:
-                    decimal = int(decimal[pap + 1:decimal.find(')')])
-                except ValueError:
-                    decimal = 0
-            if decimal == 0:
-                return ret
-            if decimal == 2:
-                ret = ',F2'
-            else:
-                pap = integer.find('(')
-                if pap == -1:
-                    integer = len(integer)
+        if 'V' in pic_str:
+
+            while True:
+                match = CobolPatterns.pic_pattern_repeats.search(pic_str)
+
+                if  not match:
+                    break
+
+                match = match.groupdict()
+                expanded_str = match['constant'] * int(match['repeat'])
+                pic_str = CobolPatterns.pic_pattern_repeats.sub(expanded_str, pic_str, 1)
+
+            integer, decimal = pic_str.split('V')
+
+            if decimal:
+                if len(decimal) == 2:
+                    ret = ',F2'
                 else:
-                    integer = int(integer[pap + 1:integer.find(')')])
-                ret = ",E'{},{}'".format('9'*integer, '9'*decimal)
+                    ret = ",E'{},{}'".format(integer, decimal)
         return ret

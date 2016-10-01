@@ -24,9 +24,9 @@ def calc_length(copy):
     if havecopy:
         bkm = ''.join(havecopy[0].split('COPY')[1].replace('.', '').split())
         msg = 'COPY {} deve ser expandido.'.format(bkm)
-        return {'retorno': False, 'msg': msg, 'logical_record_length': 0}
+        return {'retorno': False, 'msg': msg, 'lrecl': 0}
 
-    logical_record_length = 0
+    lrecl = 0
     redefines = False
     occurs = False
     occurs_length = 0
@@ -60,7 +60,7 @@ def calc_length(copy):
                 if match['pic']:
                     occurs_length += FieldLength(match['pic'], match['usage'])
                 continue
-            logical_record_length += occurs_length * occurs
+            lrecl += occurs_length * occurs
         occurs = False
         level_occurs = 0
 
@@ -72,9 +72,9 @@ def calc_length(copy):
             if occurs:
                 occurs_length += FieldLength(match['pic'], match['usage'])
             else:
-                logical_record_length += FieldLength(match['pic'], match['usage'])
+                lrecl += FieldLength(match['pic'], match['usage'])
 
-    return {'retorno': True, 'msg': None, 'logical_record_length': logical_record_length}
+    return {'retorno': True, 'msg': None, 'lrecl': lrecl}
 
 
 def FieldLength(pic_str, usage):
