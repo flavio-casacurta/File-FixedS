@@ -1,0 +1,4 @@
+{"field": ["N", "tr"]    , "length": 2  , "type": "int", "decimals":  0 , "sign": false}
+{"field": ["M", "valor"]   , "length": 12 , "type": "int", "decimals":  2 , "sign": true}
+{"field": ["N", "estado"], "length": 2  , "type": "str", "decimals":  0 , "sign": false}
+{"field": ["N", "nome"] , "length": 14 , "type": "str", "decimals":  0 , "sign": false}

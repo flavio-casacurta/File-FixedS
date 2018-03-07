@@ -1,4 +1,16 @@
 # -*- coding: utf-8 -*-
+'''
+   Created on 29/01/2016
+   @author: C&C - HardSoft
+
+   To use:
+  >>> from print_dict import Print_Dict
+  >>> # in screen
+  >>>Print_Dict()(my_dict)
+  >>> # in file
+  >>>Print_Dict(r'my_dict.txt')(my_dict)
+
+'''
 
 class Print_Dict(object):
     def __init__(self, archive=None):
