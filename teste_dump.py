@@ -15,7 +15,8 @@ def mult_per(att, mp):
     slices = ''
     for n in range(mp):
         if att['type'] == 'str':
-            slices += 'record[{}][{}:{}], '.format(att['field'][1], start, stop)
+            slices += """record[{}][{}:{}], """.format(
+                att['field'][1], start, stop)
         elif att['type'] == 'int':
             if att['decimals']:
                 slices += 'round('
@@ -32,7 +33,7 @@ def mult_per(att, mp):
     return '[{}],'.format(slices)
 
 if __name__ == '__main__':
-    with open(r'C:\Python\MyTools\File-FixedS\record_dump.txt') as fi:
+    with open(r'D:\Python\MyTools\File-FixedS\record_dump.txt') as fi:
         for record in fi:
             print record
             mpn = {}
@@ -58,7 +59,7 @@ if __name__ == '__main__':
                     slices += mult_per(att, mp)
                 else:
                     if att['type'] == 'str':
-                        slices += 'record[{}], '.format(att['field'][1])
+                        slices += """record[{}], """.format(att['field'][1])
                     elif att['type'] == 'int':
                         if att['decimals']:
                             slices += 'round('
@@ -73,4 +74,5 @@ if __name__ == '__main__':
 
             Record = namedtuple('Record', attr)
 
-            print(eval("Record({})".format(slices)))
+            record = (eval("Record({})".format(slices)))
+            print record.nome, record.valor
