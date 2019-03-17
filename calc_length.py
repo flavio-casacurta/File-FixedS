@@ -30,17 +30,24 @@ def calc_length(copy):
     redefines = False
     occurs = False
     occurs_length = 0
-    level_redefines = 0
     level_occurs = 0
+    occurs2 = False
+    occurs2_length = 0
+    level_occurs2 = 0
+    level_redefines = 0
 
     for line in lines:
         match = CobolPatterns.row_pattern.match(line.strip())
         if not match:
             continue
         match = match.groupdict()
-
         if not match['level']:
             continue
+
+        if 'REDEFINES' in line and not match['redefines']:
+            match['redefines'] = CobolPatterns.row_pattern_redefines.search(line).groupdict().get('redefines')
+        if 'OCCURS' in line and not match['occurs']:
+            match['occurs'] = CobolPatterns.row_pattern_occurs.search(line).groupdict().get('occurs')
 
         level = int(match['level'])
 
@@ -55,14 +62,34 @@ def calc_length(copy):
             redefines = True
             continue
 
+        if occurs2:
+            if level > level_occurs2:
+                if match['pic']:
+                    occurs2_length += FieldLength(match['pic'], match['usage'])
+                continue
+            occurs_length += occurs2_length * int(occurs2)
+
+        if match['occurs']:
+            if occurs:
+                level_occurs2 = level
+                occurs2 = match['occurs']
+                if match['pic']:
+                    occurs2_length += FieldLength(match['pic'], match['usage'])
+                    continue
+
         if occurs:
             if level > level_occurs:
                 if match['pic']:
                     occurs_length += FieldLength(match['pic'], match['usage'])
                 continue
-            lrecl += occurs_length * occurs
+            lrecl += occurs_length * int(occurs)
+
         occurs = False
         level_occurs = 0
+        occurs_length = 0
+        occurs2 = False
+        level_occurs2 = 0
+        occurs2_length = 0
 
         if match['occurs']:
             level_occurs = level
@@ -84,7 +111,7 @@ def FieldLength(pic_str, usage):
     while True:
         match = CobolPatterns.pic_pattern_repeats.search(pic_str)
 
-        if  not match:
+        if not match:
             break
 
         match = match.groupdict()
