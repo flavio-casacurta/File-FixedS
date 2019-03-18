@@ -28,22 +28,24 @@ while True:
         print 'Utilize o utilitario jobpk2zd'
         sys.exit(1)
 
-dicbooks = []
+lisbooks = []
 qtbksinf = 1
 while True:
     book = raw_input(u'Informe o Book de numero : {}'.format(qtbksinf)).upper()
     while True:
         if os.path.isfile(book):
-            break
-        elif book in dicbooks:
-            print 'Book "' + book + '" - ja informado!\n'
-            book = raw_input('Tente Novamente: ').upper()
+            if book in lisbooks:
+                print 'Book "' + book + '" - ja informado!\n'
+                book = raw_input('Tente Novamente: ').upper()
+            else:
+                lisbooks.append(book)
+                break
         else:
             print 'Book "' + book + '" - inexistente!\n'
             book = raw_input('Tente Novamente: ').upper()
 
     while True:
-        start = raw_input(int(u'Qual a posicao inicial que identifica o Book de numero {} :'.format(qtbksinf)))
+        start = raw_input(int(u'Qual a posicao inicial do arquivo que identifica o Book :'))
         if start:
             break
         else:
@@ -51,25 +53,32 @@ while True:
             start = raw_input(int('Tente Novamente: '))
 
     while True:
-        length = raw_input(int(u'Qual o tamanho que identifica o Book de numero {} :'.format(qtbksinf)))
+        length = raw_input(int(u'Qual o tamanho que identifica o Book :'))
         if length:
             break
         else:
             print 'campo invalido!\n'
             length = raw_input(int('Tente Novamente: '))
 
+    list_cont = []
     while True:
         content = raw_input(u'Qual o conteudo eue identifica o Book de numero {} :'.format(qtbksinf))
         if content:
-            break
+            list_cont.append(content)
+            print 'Mais algum conteudo?\n'
+            content = raw_input('Informe Novo conteudo : ')
+            if not content:
+                break
         else:
             print 'conteudo invalido!\n'
             content = raw_input('Tente Novamente: ')
 
-    dicbooks[book] = {'start': start, 'length': length, 'content': content}
     qtbksinf += 1
     if qtbksinf > qtbks:
         break
+    dicbooks = {}
+    for book in lisbooks:
+        dicbooks[book] = list_cont
 
 sortin = raw_input(u'Informe o nome do arquivo de Entrada: ').upper()
 while True:
@@ -87,7 +96,7 @@ while True:
         print 'arquivo de Entrada invalido!\n'
         sortot = raw_input('Tente Novamente: ').upper()
 
-gerjcl = GerJobPdZds(jobname, path, dicbooks, sortin, sortout)
+gerjcl = GerJobPdZds(jobname, path, dicbooks, start, length, sortin, sortout)
 gerjob = gerjcl.gerjob()
 
 if gerjob[0]:

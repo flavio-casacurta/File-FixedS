@@ -13,10 +13,12 @@ from calc_length import calc_length
 
 class GerJobPdZds(object):
 
-    def __init__(self, jobname, path, dicbooks, sortin, sortout):
+    def __init__(self, jobname, path, dicbooks, start, length, sortin, sortout):
         self.jobname = jobname
         self.path = path
         self.dicbooks = dicbooks
+        self.start = start
+        self.length = length
         self.sortin = sortin
         self.sortout = sortout
 
@@ -33,10 +35,12 @@ class GerJobPdZds(object):
                     bkzd.writelines(bookout)
                 lengthout = str(calc_length(bookout)['lrecl'])
                 start = 1
-                strt = self.dicbooks['start']
-                length = self.dicbooks['length']
-                content = self.dicbooks['content']
-                formatout = "{}IFTHEN=(WHEN=({},{},CH,EQ,C'{}'),\n".format(inrec, strt, length, content)
+                content = ''
+                for
+                formatout = "{}IFTHEN=(WHEN=({},{},CH,EQ,C'{}'),\n".format(inrec,
+                                                                           self.start,
+                                                                           self.length,
+                                                                           content)
                 inrec = "       "
                 build = '         BUILD('
                 bookin = file(self.book).readlines()
@@ -45,7 +49,9 @@ class GerJobPdZds(object):
                     if 'PIC' not in line:
                         continue
                     splt_pic = line.split('PIC')[1]
-                    repl_pic = splt_pic.replace(' USAGE ', '').replace('COMP-3', '').replace('COMP', '').rstrip()
+                    repl_pic = splt_pic.replace(' USAGE ', '').\
+                                        replace('COMP-3', '').\
+                                        replace('COMP', '').rstrip()
 
                     length = int(str(calc_length(line.replace(splt_pic, repl_pic))['lrecl']))
                     lenpd  = calc_length(line)['lrecl']

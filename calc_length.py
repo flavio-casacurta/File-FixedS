@@ -28,12 +28,8 @@ def calc_length(copy):
 
     lrecl = 0
     redefines = False
-    occurs = False
-    occurs_length = 0
-    level_occurs = 0
-    occurs2 = False
-    occurs2_length = 0
-    level_occurs2 = 0
+    occurs = 0
+    dicoccurs = {}
     level_redefines = 0
 
     for line in lines:
@@ -62,42 +58,41 @@ def calc_length(copy):
             redefines = True
             continue
 
-        if occurs2:
-            if level > level_occurs2:
-                if match['pic']:
-                    occurs2_length += FieldLength(match['pic'], match['usage'])
-                continue
-            occurs_length += occurs2_length * int(occurs2)
-
-        if match['occurs']:
-            if occurs:
-                level_occurs2 = level
-                occurs2 = match['occurs']
-                if match['pic']:
-                    occurs2_length += FieldLength(match['pic'], match['usage'])
-                    continue
-
         if occurs:
-            if level > level_occurs:
+            if level > dicoccurs[occurs]['level']:
+                if match['occurs']:
+                    occurs += 1
+                    attrib = {}
+                    attrib['occ'] = int(match['occurs'])
+                    attrib['level'] = level
+                    attrib['length'] = 0
+                    dicoccurs[occurs] = attrib
                 if match['pic']:
-                    occurs_length += FieldLength(match['pic'], match['usage'])
+                    dicoccurs[occurs]['length'] += FieldLength(match['pic'], match['usage'])
                 continue
-            lrecl += occurs_length * int(occurs)
-
-        occurs = False
-        level_occurs = 0
-        occurs_length = 0
-        occurs2 = False
-        level_occurs2 = 0
-        occurs2_length = 0
+            while True:
+                if occurs == 1:
+                    lrecl += dicoccurs[occurs]['length'] * dicoccurs[occurs]['occ']
+                else:
+                    dicoccurs[occurs-1]['length'] += dicoccurs[occurs]['length'] * dicoccurs[occurs]['occ']
+                del dicoccurs[occurs]
+                occurs -= 1
+                if not occurs:
+                    break
+                if level > dicoccurs[occurs]['level']:
+                    break
 
         if match['occurs']:
-            level_occurs = level
-            occurs = match['occurs']
+            occurs += 1
+            attrib = {}
+            attrib['occ'] = int(match['occurs'])
+            attrib['level'] = level
+            attrib['length'] = 0
+            dicoccurs[occurs] = attrib
 
         if match['pic']:
             if occurs:
-                occurs_length += FieldLength(match['pic'], match['usage'])
+                dicoccurs[occurs]['length'] += FieldLength(match['pic'], match['usage'])
             else:
                 lrecl += FieldLength(match['pic'], match['usage'])
 
